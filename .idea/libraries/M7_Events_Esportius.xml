@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="M7_Events_Esportius">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/dist/M7_Events_Esportius.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
