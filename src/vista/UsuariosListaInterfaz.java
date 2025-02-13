@@ -4,19 +4,18 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.util.List;
+import controlador.DataController;
 import modelo.Usuario;
-import persistencia.UsuarioDAO;
 
 public class UsuariosListaInterfaz extends JFrame {
     private JTable tablaUsuarios;
     private DefaultTableModel modeloTabla;
     private JButton btnAgregar, btnEliminar;
-    private UsuarioDAO usuarioDAO;
+    private DataController dataController;
 
-    public UsuariosListaInterfaz(UsuarioDAO usuarioDAO) {
-        this.usuarioDAO = usuarioDAO; // Guardamos la referencia al DAO
+    public UsuariosListaInterfaz(DataController dataController) {
+        this.dataController = dataController; // Usamos DataController en lugar del DAO directamente
 
         setTitle("Gestión de Usuarios");
         setSize(600, 400);
@@ -24,68 +23,60 @@ public class UsuariosListaInterfaz extends JFrame {
         setLayout(new BorderLayout());
         setLocationRelativeTo(null);
 
-        // Etiqueta de título
         JLabel lblTitulo = new JLabel("Lista de Usuarios", SwingConstants.CENTER);
         lblTitulo.setFont(new Font("Arial", Font.BOLD, 16));
         add(lblTitulo, BorderLayout.NORTH);
 
-        // Modelo de la tabla
         String[] columnas = {"Nombre", "Apellido", "Email", "Rol", "Fecha Alta"};
-        modeloTabla = new DefaultTableModel(columnas, 0);
+        modeloTabla = new DefaultTableModel(columnas, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false;
+            }
+        };
         tablaUsuarios = new JTable(modeloTabla);
-        JScrollPane scrollPane = new JScrollPane(tablaUsuarios);
-        add(scrollPane, BorderLayout.CENTER);
+        add(new JScrollPane(tablaUsuarios), BorderLayout.CENTER);
 
-        // Panel de botones
         JPanel panelBotones = new JPanel();
         btnAgregar = new JButton("Agregar Usuario");
-        btnAgregar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                new UsuariosAgregarDialogo(UsuariosListaInterfaz.this, usuarioDAO);
-                actualizarTabla();
-            }
+        btnAgregar.addActionListener(e -> {
+            new UsuariosAgregarDialogo(this, dataController);
+            actualizarTabla();
         });
         panelBotones.add(btnAgregar);
 
         btnEliminar = new JButton("Eliminar Usuario");
-        btnEliminar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                eliminarUsuario();
-            }
-        });
+        btnEliminar.addActionListener(e -> eliminarUsuario());
         panelBotones.add(btnEliminar);
 
         add(panelBotones, BorderLayout.SOUTH);
 
-        // Cargar usuarios desde UsuarioDAO
         cargarUsuarios();
-
         setVisible(true);
     }
 
     private void cargarUsuarios() {
-        List<Usuario> usuarios = usuarioDAO.listarUsuarios();
+        modeloTabla.setRowCount(0);
+        List<Usuario> usuarios = dataController.getUsuarios();
         for (Usuario usuario : usuarios) {
             modeloTabla.addRow(new Object[]{
-                usuario.getNombre(), usuario.getApellido(), usuario.getEmail(), usuario.getRol(), usuario.getFechaAlta()
+                    usuario.getNombre(), usuario.getApellido(), usuario.getEmail(), usuario.getRol(), usuario.getFechaAlta()
             });
         }
     }
 
     private void actualizarTabla() {
-        modeloTabla.setRowCount(0); // Limpiar la tabla
-        cargarUsuarios(); // Recargar los datos
+        modeloTabla.setRowCount(0);
+        cargarUsuarios();
     }
 
     private void eliminarUsuario() {
         int selectedRow = tablaUsuarios.getSelectedRow();
         if (selectedRow != -1) {
-            String email = (String) modeloTabla.getValueAt(selectedRow, 2); // Obtener email del usuario seleccionado
+            String email = (String) modeloTabla.getValueAt(selectedRow, 2);
             int confirm = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar a este usuario?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
-                usuarioDAO.eliminarUsuario(email);
+                dataController.eliminarUsuario(email);
                 actualizarTabla();
             }
         } else {

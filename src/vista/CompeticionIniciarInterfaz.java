@@ -7,8 +7,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.List;
+import controlador.DataController;
 import modelo.Competicion;
-import persistencia.CompeticionDAO;
 
 public class CompeticionIniciarInterfaz extends JFrame {
     private JTable tablaPendientes;
@@ -17,10 +17,10 @@ public class CompeticionIniciarInterfaz extends JFrame {
     private DefaultTableModel modeloEnCurso;
     private JButton btnIniciar;
     private JButton btnAvanzar;
-    private CompeticionDAO competicionDAO;
+    private DataController dataController;
 
-    public CompeticionIniciarInterfaz(CompeticionDAO competicionDAO) {
-        this.competicionDAO = competicionDAO;
+    public CompeticionIniciarInterfaz(DataController dataController) {
+        this.dataController = dataController;
 
         setTitle("Gestionar Competiciones");
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -49,7 +49,7 @@ public class CompeticionIniciarInterfaz extends JFrame {
         // Pestaña de competiciones en curso
         JPanel panelEnCurso = new JPanel(new BorderLayout());
         modeloEnCurso = new DefaultTableModel(new String[]{
-            "Nombre", "Tipo de Evento", "Fecha", "Número de Equipos", "Estado"}, 0) {
+                "Nombre", "Tipo de Evento", "Fecha", "Número de Equipos", "Estado"}, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
@@ -58,7 +58,7 @@ public class CompeticionIniciarInterfaz extends JFrame {
         tablaEnCurso = new JTable(modeloEnCurso);
         panelEnCurso.add(new JScrollPane(tablaEnCurso), BorderLayout.CENTER);
 
-        btnAvanzar = new JButton("Avanzar Competición");
+        btnAvanzar = new JButton("Avanzar/Finalizar Competición");
         panelEnCurso.add(btnAvanzar, BorderLayout.SOUTH);
 
         tabbedPane.addTab("En Curso", panelEnCurso);
@@ -74,11 +74,22 @@ public class CompeticionIniciarInterfaz extends JFrame {
                     int filaSeleccionada = tablaPendientes.getSelectedRow();
                     if (filaSeleccionada != -1) {
                         String nombreCompeticion = (String) modeloPendientes.getValueAt(filaSeleccionada, 0);
-                        Competicion competicion = competicionDAO.buscarCompeticionPorNombre(nombreCompeticion);
+                        Competicion competicion = dataController.buscarCompeticionPorNombre(nombreCompeticion);
                         if (competicion != null) {
                             new EventosDetalleDialogo(CompeticionIniciarInterfaz.this, competicion);
                         }
                     }
+                }
+            }
+        });
+
+        btnAvanzar.addActionListener(e -> {
+            int filaSeleccionada = tablaEnCurso.getSelectedRow();
+            if (filaSeleccionada != -1) {
+                String nombreCompeticion = (String) modeloEnCurso.getValueAt(filaSeleccionada, 0);
+                Competicion competicion = dataController.buscarCompeticionPorNombre(nombreCompeticion);
+                if (competicion != null) {
+                    new CompeticionEstadoDialogo(CompeticionIniciarInterfaz.this, competicion, dataController);
                 }
             }
         });
@@ -89,15 +100,15 @@ public class CompeticionIniciarInterfaz extends JFrame {
     private void cargarCompeticiones() {
         modeloPendientes.setRowCount(0);
         modeloEnCurso.setRowCount(0);
-        List<Competicion> competiciones = competicionDAO.listarCompeticiones();
+        List<Competicion> competiciones = dataController.getCompeticiones();
         for (Competicion competicion : competiciones) {
             if ("Pendiente".equals(competicion.getEstado())) {
                 modeloPendientes.addRow(new Object[]{
-                    competicion.getNombre(), competicion.getTipoEvento(), competicion.getFecha(), competicion.getNumeroEquipos(), competicion.getEstado()
+                        competicion.getNombre(), competicion.getTipoEvento(), competicion.getFecha(), competicion.getNumeroEquipos(), competicion.getEstado()
                 });
             } else if ("En curso".equals(competicion.getEstado())) {
                 modeloEnCurso.addRow(new Object[]{
-                    competicion.getNombre(), competicion.getTipoEvento(), competicion.getFecha(), competicion.getNumeroEquipos(), competicion.getEstado()
+                        competicion.getNombre(), competicion.getTipoEvento(), competicion.getFecha(), competicion.getNumeroEquipos(), competicion.getEstado()
                 });
             }
         }
@@ -107,15 +118,16 @@ public class CompeticionIniciarInterfaz extends JFrame {
         int filaSeleccionada = tablaPendientes.getSelectedRow();
         if (filaSeleccionada != -1) {
             String nombreCompeticion = (String) modeloPendientes.getValueAt(filaSeleccionada, 0);
-            Competicion competicion = competicionDAO.buscarCompeticionPorNombre(nombreCompeticion);
+            Competicion competicion = dataController.buscarCompeticionPorNombre(nombreCompeticion);
             if (competicion != null) {
                 competicion.setEstado("En curso");
                 JOptionPane.showMessageDialog(this, "La competición ha sido iniciada.");
                 cargarCompeticiones();
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Seleccione una competición para iniciar.", 
+            JOptionPane.showMessageDialog(this, "Seleccione una competición para iniciar.",
                     "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
+
 }

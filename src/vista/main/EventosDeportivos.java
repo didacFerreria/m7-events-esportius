@@ -2,23 +2,18 @@ package vista.main;
 
 import javax.swing.*;
 import java.awt.*;
-import persistencia.UsuarioDAO;
-import persistencia.CompeticionDAO;
-import persistencia.memoria.UsuarioDAOMemoria;
-import persistencia.memoria.CompeticionDAOMemoria;
+import controlador.DataController;
 import vista.EventosListaInterfaz;
 import vista.UsuariosListaInterfaz;
 import vista.CompeticionIniciarInterfaz;
 
 public class EventosDeportivos extends JFrame {
 
-    private UsuarioDAO usuarioDAO;
-    private CompeticionDAO competicionDAO;
+    private DataController dataController;
 
     public EventosDeportivos() {
-        // Inicializar DAOs (puede cambiarse a una implementación de BD en el futuro)
-        usuarioDAO = new UsuarioDAOMemoria();
-        competicionDAO = new CompeticionDAOMemoria();
+        // Inicializar DataController (gestiona todos los DAOs)
+        dataController = new DataController();
 
         setTitle("Aplicació Registre Usuaris");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
@@ -36,40 +31,43 @@ public class EventosDeportivos extends JFrame {
         // Crear el menú superior
         JMenuBar menuBar = new JMenuBar();
 
-        JMenu mestresMenu = new JMenu("Mestres");
-        JMenuItem esdevenimentsMenuItem = new JMenuItem("Esdeveniments");
-        JMenuItem usuarisMenuItem = new JMenuItem("Usuaris");
+        JMenu mestresMenu = new JMenu("Maestros");
+        JMenuItem esdevenimentsMenuItem = new JMenuItem("Eventos");
+        JMenuItem usuarisMenuItem = new JMenuItem("Usuarios");
 
         // Conectar con las interfaces de usuarios y eventos
-        usuarisMenuItem.addActionListener(e -> new UsuariosListaInterfaz(usuarioDAO));
-        esdevenimentsMenuItem.addActionListener(e -> new EventosListaInterfaz(competicionDAO));
+        usuarisMenuItem.addActionListener(e -> new UsuariosListaInterfaz(dataController));
+        esdevenimentsMenuItem.addActionListener(e -> new EventosListaInterfaz(dataController));
 
         mestresMenu.add(esdevenimentsMenuItem);
         mestresMenu.add(usuarisMenuItem);
 
-        JMenu competicioMenu = new JMenu("Competicio");
-        JMenuItem iniciMenuItem = new JMenuItem("Inici"); // Cambio aquí, antes era un JMenu en vez de JMenuItem
-        JMenuItem resultatsMenuItem = new JMenuItem("Resultats");
+        JMenu competicioMenu = new JMenu("Competición");
+        JMenuItem iniciMenuItem = new JMenuItem("Iniciar");
+        JMenuItem resultatsMenuItem = new JMenuItem("Resultados");
 
         // Conectar con CompeticionIniciarInterfaz
-        iniciMenuItem.addActionListener(e -> new CompeticionIniciarInterfaz(competicionDAO));
+        iniciMenuItem.addActionListener(e -> new CompeticionIniciarInterfaz(dataController));
 
         competicioMenu.add(iniciMenuItem);
         competicioMenu.add(resultatsMenuItem);
 
-        JMenu ajudaMenu = new JMenu("Ajuda");
-        ajudaMenu.add(new JMenuItem("Cerca"));
+        JMenu ajudaMenu = new JMenu("Ayuda");
+        ajudaMenu.add(new JMenuItem("Buscar"));
 
-        JMenu empresaMenu = new JMenu("L'empresa");
-        JMenu sortirMenu = new JMenu("Sortir");
+        JMenu empresaMenu = new JMenu("La empresa");
+        JMenuItem aboutItem = new JMenuItem("About");
+        JMenu sortirMenu = new JMenu("Configuración");
         JMenuItem sortirItem = new JMenuItem("Salir");
         sortirItem.addActionListener(e -> {
             int confirm = JOptionPane.showConfirmDialog(EventosDeportivos.this,
-                    "¿Estás seguro de que quieres salir?", "Confirmar salida", JOptionPane.YES_NO_OPTION);
+                    "¿Estás seguro de que quieres salir?", "Confirmar salida",
+                    JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 System.exit(0);
             }
         });
+        empresaMenu.add(aboutItem);
         sortirMenu.add(sortirItem);
 
         // Añadir menús al menú bar

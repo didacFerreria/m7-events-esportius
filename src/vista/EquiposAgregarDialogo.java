@@ -42,7 +42,8 @@ public class EquiposAgregarDialogo extends JDialog {
         add(panelSuperior, BorderLayout.NORTH);
 
         // Tabla de jugadores con más columnas
-        modeloTabla = new DefaultTableModel(new String[]{"Nombre", "Apellido", "Email", "Dorsal", "Posición"}, 0);
+        modeloTabla = new DefaultTableModel(new String[]{
+                "Nombre", "Apellido", "Email", "Dorsal", "Posición"}, 0);
         tablaJugadores = new JTable(modeloTabla);
         JScrollPane scrollPane = new JScrollPane(tablaJugadores);
         add(scrollPane, BorderLayout.CENTER);
@@ -64,7 +65,9 @@ public class EquiposAgregarDialogo extends JDialog {
         int cantidad = (int) spnCantidadJugadores.getValue();
         modeloTabla.setRowCount(0);
         for (int i = 0; i < cantidad; i++) {
-            modeloTabla.addRow(new Object[]{"Jugador " + (i + 1), "Apellido " + (i + 1), "email" + (i + 1) + "@example.com", i + 1, "Posición"});
+            modeloTabla.addRow(new Object[]{
+                    "Jugador " + (i + 1), "Apellido " + (i + 1), "email" + (i + 1) +
+                    "@example.com", i + 1, "Posición"});
         }
     }
 

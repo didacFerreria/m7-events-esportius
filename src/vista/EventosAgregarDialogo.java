@@ -3,13 +3,11 @@ package vista;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import controlador.DataController;
 import modelo.Competicion;
-import persistencia.CompeticionDAO;
 import modelo.Equipo;
 
 public class EventosAgregarDialogo extends JDialog {
@@ -18,14 +16,14 @@ public class EventosAgregarDialogo extends JDialog {
     private JLabel lblNumeroEquipos;
     private JComboBox<String> cmbCategoria;
     private JButton btnGuardar;
-    private CompeticionDAO competicionDAO;
+    private DataController dataController;
     private DefaultTableModel modeloEquipos;
     private JTable tablaEquipos;
     private List<Equipo> equipos;
 
-    public EventosAgregarDialogo(JFrame parent, CompeticionDAO competicionDAO) {
+    public EventosAgregarDialogo(JFrame parent, DataController dataController) {
         super(parent, "Agregar Evento", true);
-        this.competicionDAO = competicionDAO;
+        this.dataController = dataController;
         this.equipos = new ArrayList<>();
 
         setLayout(new BorderLayout());
@@ -34,12 +32,11 @@ public class EventosAgregarDialogo extends JDialog {
 
         JTabbedPane tabbedPane = new JTabbedPane();
 
-        // Pestaña de datos de competición
         JPanel panelDatos = new JPanel(new GridLayout(4, 2, 10, 10));
         panelDatos.add(new JLabel("Nombre del evento:"));
         txtNombre = new JTextField();
         panelDatos.add(txtNombre);
-        
+
         panelDatos.add(new JLabel("Tipo de Evento:"));
         cmbTipoEvento = new JComboBox<>(new String[]{"Campionat de Basquet", "Cursa de Muntanya", "Competició Natació"});
         panelDatos.add(cmbTipoEvento);
@@ -54,7 +51,6 @@ public class EventosAgregarDialogo extends JDialog {
 
         tabbedPane.addTab("Datos Evento", panelDatos);
 
-        // Pestaña de equipos
         JPanel panelEquipos = new JPanel(new BorderLayout());
         modeloEquipos = new DefaultTableModel(new String[]{"Nombre Equipo"}, 0) {
             @Override
@@ -62,14 +58,14 @@ public class EventosAgregarDialogo extends JDialog {
                 return false;
             }
         };
-        
+
         tablaEquipos = new JTable(modeloEquipos);
         panelEquipos.add(new JScrollPane(tablaEquipos), BorderLayout.CENTER);
-        
+
         JButton btnAgregarEquipo = new JButton("Agregar Equipo");
         btnAgregarEquipo.addActionListener(e -> agregarEquipo());
         panelEquipos.add(btnAgregarEquipo, BorderLayout.SOUTH);
-        
+
         tabbedPane.addTab("Equipos", panelEquipos);
 
         add(tabbedPane, BorderLayout.CENTER);
@@ -107,7 +103,7 @@ public class EventosAgregarDialogo extends JDialog {
             nuevaCompeticion.agregarEquipo(equipo);
         }
 
-        competicionDAO.agregarCompeticion(nuevaCompeticion);
+        dataController.agregarCompeticion(nuevaCompeticion);
         JOptionPane.showMessageDialog(this, "Evento agregado exitosamente.");
         dispose();
     }

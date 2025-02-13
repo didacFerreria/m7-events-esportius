@@ -1,26 +1,21 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package vista;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import controlador.DataController;
 import modelo.Usuario;
-import persistencia.UsuarioDAO;
 
 public class UsuariosAgregarDialogo extends JDialog {
     private JTextField txtNombre, txtApellido, txtEmail;
     private JPasswordField txtPassword;
     private JComboBox<String> cmbRol;
     private JButton btnGuardar;
-    private UsuarioDAO usuarioDAO;
+    private DataController dataController;
 
-    public UsuariosAgregarDialogo(JFrame parent, UsuarioDAO usuarioDAO) {
+    public UsuariosAgregarDialogo(JFrame parent, DataController dataController) {
         super(parent, "Agregar Usuario", true);
-        this.usuarioDAO = usuarioDAO;
+        this.dataController = dataController; // Se guarda la referencia al DataController
 
         setLayout(new GridLayout(6, 2, 10, 10));
         setSize(400, 300);
@@ -47,22 +42,17 @@ public class UsuariosAgregarDialogo extends JDialog {
         add(cmbRol);
 
         btnGuardar = new JButton("Guardar");
-        btnGuardar.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                guardarUsuario();
-            }
-        });
+        btnGuardar.addActionListener(this::guardarUsuario);
         add(btnGuardar);
 
         setVisible(true);
     }
 
-    private void guardarUsuario() {
-        String nombre = txtNombre.getText();
-        String apellido = txtApellido.getText();
-        String email = txtEmail.getText();
-        String password = new String(txtPassword.getPassword());
+    private void guardarUsuario(ActionEvent e) {
+        String nombre = txtNombre.getText().trim();
+        String apellido = txtApellido.getText().trim();
+        String email = txtEmail.getText().trim();
+        String password = new String(txtPassword.getPassword()).trim();
         String rol = (String) cmbRol.getSelectedItem();
 
         if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || password.isEmpty()) {
@@ -71,7 +61,7 @@ public class UsuariosAgregarDialogo extends JDialog {
         }
 
         Usuario nuevoUsuario = new Usuario(nombre, apellido, email, password, rol);
-        usuarioDAO.agregarUsuario(nuevoUsuario);
+        dataController.agregarUsuario(nuevoUsuario);
         JOptionPane.showMessageDialog(this, "Usuario agregado exitosamente.");
         dispose();
     }
