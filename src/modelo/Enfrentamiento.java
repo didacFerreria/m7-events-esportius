@@ -1,5 +1,7 @@
 package modelo;
 
+import java.util.Random;
+
 public class Enfrentamiento {
     private Equipo equipo1;
     private Equipo equipo2;
@@ -32,5 +34,13 @@ public class Enfrentamiento {
     public void marcarComoFinalizado(Equipo ganador) {
         this.finalizado = true;
         this.ganador = ganador;
+    }
+
+    public void simular() {
+        if (!finalizado && equipo1 != null && equipo2 != null) {
+            Random random = new Random();
+            this.ganador = random.nextBoolean() ? equipo1 : equipo2;
+            this.finalizado = true;
+        }
     }
 }

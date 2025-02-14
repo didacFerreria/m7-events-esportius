@@ -38,7 +38,7 @@ public class EventosAgregarDialogo extends JDialog {
         panelDatos.add(txtNombre);
 
         panelDatos.add(new JLabel("Tipo de Evento:"));
-        cmbTipoEvento = new JComboBox<>(new String[]{"Campionat de Basquet", "Cursa de Muntanya", "Competició Natació"});
+        cmbTipoEvento = new JComboBox<>(new String[]{"Campionat de Basquet (LLiga)", "Campionat de Basquet (Torneig)", "Cursa de Muntanya", "Competició Natació"});
         panelDatos.add(cmbTipoEvento);
 
         panelDatos.add(new JLabel("Número de equipos:"));

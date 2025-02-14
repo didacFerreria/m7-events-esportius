@@ -29,9 +29,9 @@ public class DataController {
     }
 
     private static void crearCompeticionPorDefecto() {
-        Competicion competicion = new Competicion("Liga Inicial", "Campionat de Basquet", LocalDate.now(), 10, "Senior");
+        Competicion competicion = new Competicion("Liga Inicial", "Campionat de Basquet (Torneig)", LocalDate.now(), 10, "Senior");
 
-        for (int i = 1; i <= 10; i++) {
+        for (int i = 1; i <= 8; i++) {
             Equipo equipo = new Equipo("E" + i, 20); // Jugadores máximos 20
             for (int j = 1; j <= 5 + (int)(Math.random() * 19); j++) {
                 equipo.agregarJugador(new Jugador(

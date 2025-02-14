@@ -57,10 +57,12 @@ public class CompeticionEstadoDialogo extends JDialog {
     private void generarVistaSegunCompeticion() {
         panelTorneo.removeAll();
 
-        if ("Campionat de Basquet".equals(competicion.getTipoEvento())) {
+        if ("Campionat de Basquet (Lliga)".equals(competicion.getTipoEvento())) {
             generarVistaLiga();
         } else if ("Cursa de Muntanya".equals(competicion.getTipoEvento())) {
             generarVistaCarrera();
+        } else if ("Campionat de Basquet (Torneig)".equals(competicion.getTipoEvento())) {
+            generarVistaTorneo();
         }
 
         panelTorneo.revalidate();
@@ -70,15 +72,14 @@ public class CompeticionEstadoDialogo extends JDialog {
     private void generarVistaLiga() {
         List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
 
-        // Si no hay enfrentamientos previos, generarlos y guardarlos
-        if (enfrentamientos.isEmpty()) {
+        if (enfrentamientos == null || enfrentamientos.isEmpty()) {
             List<Equipo> equipos = new ArrayList<>(competicion.getEquipos());
             Collections.shuffle(equipos);
 
+            enfrentamientos = new ArrayList<>();
             for (int i = 0; i < equipos.size(); i += 2) {
                 if (i + 1 < equipos.size()) {
-                    Enfrentamiento enfrentamiento = new Enfrentamiento(equipos.get(i), equipos.get(i + 1));
-                    enfrentamientos.add(enfrentamiento);
+                    enfrentamientos.add(new Enfrentamiento(equipos.get(i), equipos.get(i + 1)));
                 }
             }
             competicion.setEnfrentamientos(enfrentamientos);
@@ -108,7 +109,6 @@ public class CompeticionEstadoDialogo extends JDialog {
         panelTorneo.add(panelMatches);
     }
 
-
     private void generarVistaCarrera() {
         JPanel panelCarrera = new JPanel();
         panelCarrera.setLayout(new BoxLayout(panelCarrera, BoxLayout.Y_AXIS));
@@ -117,10 +117,50 @@ public class CompeticionEstadoDialogo extends JDialog {
         for (Equipo equipo : competicion.getEquipos()) {
             JPanel equipoPanel = crearPanelEquipo(equipo);
             panelCarrera.add(equipoPanel);
-            panelCarrera.add(Box.createVerticalStrut(10)); // Espaciado entre equipos
+            panelCarrera.add(Box.createVerticalStrut(10));
         }
 
         panelTorneo.add(panelCarrera);
+    }
+
+    private void generarVistaTorneo() {
+        List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
+
+        if (enfrentamientos == null || enfrentamientos.isEmpty()) {
+            List<Equipo> equipos = new ArrayList<>(competicion.getEquipos());
+            Collections.shuffle(equipos);
+
+            enfrentamientos = new ArrayList<>();
+            for (int i = 0; i < equipos.size(); i += 2) {
+                if (i + 1 < equipos.size()) {
+                    enfrentamientos.add(new Enfrentamiento(equipos.get(i), equipos.get(i + 1)));
+                }
+            }
+            competicion.setEnfrentamientos(enfrentamientos);
+        }
+
+        JPanel panelTorneoVista = new JPanel();
+        panelTorneoVista.setLayout(new GridLayout(enfrentamientos.size(), 2, 10, 10));
+
+        for (Enfrentamiento enfrentamiento : enfrentamientos) {
+            JPanel panel1 = crearPanelEquipo(enfrentamiento.getEquipo1());
+            JPanel panel2 = crearPanelEquipo(enfrentamiento.getEquipo2());
+
+            if (enfrentamiento.isFinalizado()) {
+                if (enfrentamiento.getGanador().equals(enfrentamiento.getEquipo1())) {
+                    panel1.setBackground(Color.GREEN);
+                    panel2.setBackground(Color.RED);
+                } else {
+                    panel1.setBackground(Color.RED);
+                    panel2.setBackground(Color.GREEN);
+                }
+            }
+
+            panelTorneoVista.add(panel1);
+            panelTorneoVista.add(panel2);
+        }
+
+        panelTorneo.add(panelTorneoVista);
     }
 
     private JPanel crearPanelEquipo(Equipo equipo) {
@@ -153,6 +193,9 @@ public class CompeticionEstadoDialogo extends JDialog {
     }
 
     private void simularPartidos() {
-        JOptionPane.showMessageDialog(this, "Simulación de partidos en desarrollo...");
+        for (Enfrentamiento enfrentamiento : competicion.getEnfrentamientos()) {
+            enfrentamiento.simular();
+        }
+        generarVistaSegunCompeticion();
     }
 }
