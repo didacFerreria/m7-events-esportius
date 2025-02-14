@@ -2,6 +2,7 @@ package modelo;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Competicion {
     private String nombre;
@@ -9,8 +10,9 @@ public class Competicion {
     private LocalDate fecha;
     private int numeroEquipos;
     private String categoria;
-    private String estado; // Nuevo atributo para el estado de la competición
+    private String estado; // Estado de la competición
     private ArrayList<Equipo> equipos;
+    private List<Enfrentamiento> enfrentamientos; // Nuevo atributo para los enfrentamientos
 
     public Competicion(String nombre, String tipoEvento, LocalDate fecha, int numeroEquipos, String categoria) {
         this.nombre = nombre;
@@ -20,6 +22,7 @@ public class Competicion {
         this.categoria = categoria;
         this.estado = "Pendiente"; // Estado inicial por defecto
         this.equipos = new ArrayList<>();
+        this.enfrentamientos = new ArrayList<>();
     }
 
     // Getters y Setters
@@ -50,6 +53,14 @@ public class Competicion {
         }
     }
 
+    public List<Enfrentamiento> getEnfrentamientos() {
+        return enfrentamientos;
+    }
+
+    public void setEnfrentamientos(List<Enfrentamiento> enfrentamientos) {
+        this.enfrentamientos = enfrentamientos;
+    }
+
     @Override
     public String toString() {
         return "Competicion{" +
@@ -60,6 +71,7 @@ public class Competicion {
                 ", categoria='" + categoria + '\'' +
                 ", estado='" + estado + '\'' +
                 ", equipos=" + equipos +
+                ", enfrentamientos=" + enfrentamientos +
                 '}';
     }
 }

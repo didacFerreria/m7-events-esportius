@@ -2,6 +2,8 @@ package vista.main;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import controlador.DataController;
 import vista.EventosListaInterfaz;
 import vista.UsuariosListaInterfaz;
@@ -10,6 +12,7 @@ import vista.CompeticionIniciarInterfaz;
 public class EventosDeportivos extends JFrame {
 
     private DataController dataController;
+    private JButton btnEventos, btnUsuarios, btnCompeticionIniciar, btnCompeticionResultado;
 
     public EventosDeportivos() {
         // Inicializar DataController (gestiona todos los DAOs)
@@ -79,7 +82,7 @@ public class EventosDeportivos extends JFrame {
 
         setJMenuBar(menuBar);
 
-        // Crear el panel central para la imagen
+        // Crear el panel central para la imagen de fondo
         JLabel imageLabel = new JLabel();
         ImageIcon imagenMenu = null;
         try {
@@ -92,13 +95,65 @@ public class EventosDeportivos extends JFrame {
                 imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
             }
         }
+        JPanel panelFondo = new JPanel(new BorderLayout());
+        panelFondo.add(imageLabel, BorderLayout.CENTER);
+        add(panelFondo, BorderLayout.CENTER);
 
-        add(imageLabel, BorderLayout.CENTER);
+        // Panel para botones flotantes
+        JLayeredPane layeredPane = getLayeredPane();
+
+        btnEventos = crearBoton("boton-eventos.png", "Abrir eventos", e -> new EventosListaInterfaz(dataController));
+        btnUsuarios = crearBoton("boton-usuarios.png", "Abrir usuarios", e -> new UsuariosListaInterfaz(dataController));
+        btnCompeticionIniciar = crearBoton("boton-competicion-iniciar.png", "Iniciar competición", e -> new CompeticionIniciarInterfaz(dataController));
+        btnCompeticionResultado = crearBoton("boton-competicion-resultados.png", "Ver resultados", e -> new CompeticionIniciarInterfaz(dataController));
+
+        layeredPane.add(btnEventos, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(btnUsuarios, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(btnCompeticionIniciar, JLayeredPane.PALETTE_LAYER);
+        layeredPane.add(btnCompeticionResultado, JLayeredPane.PALETTE_LAYER);
+
+        addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                posicionarBotones();
+            }
+        });
+
+        posicionarBotones();
         setLocationRelativeTo(null);
         setVisible(true);
     }
 
+    private JButton crearBoton(String imagenRuta, String tooltip, java.awt.event.ActionListener actionListener) {
+        ImageIcon icono = new ImageIcon(getClass().getClassLoader().getResource("resources/" + imagenRuta));
+        Image imagenEscalada = icono.getImage().getScaledInstance(110, 110, Image.SCALE_SMOOTH);
+        icono = new ImageIcon(imagenEscalada);
+
+        JButton boton = new JButton(icono);
+        boton.setToolTipText(tooltip);
+        boton.setFocusPainted(false);
+        boton.setBorderPainted(false);
+        boton.setContentAreaFilled(false);
+        boton.setOpaque(false);
+        boton.setBounds(0, 0, 65, 65);
+        boton.addActionListener(actionListener);
+        return boton;
+    }
+
+    private void posicionarBotones() {
+        int width = getWidth();
+        int height = getHeight();
+
+        btnEventos.setBounds((int) (width * 0.1), (int) (height * 0.35), 65, 65);
+        btnUsuarios.setBounds((int) (width * 0.1), (int) (height * 0.55), 65, 65);
+        btnCompeticionIniciar.setBounds((int) (width * 0.8), (int) (height * 0.35), 65, 65);
+        btnCompeticionResultado.setBounds((int) (width * 0.8), (int) (height * 0.55), 65, 65);
+    }
+
     public static void main(String[] args) {
-        SwingUtilities.invokeLater(EventosDeportivos::new);
+        SwingUtilities.invokeLater(() -> {
+            DataController.inicializarDatos(); // Asegura que siempre haya una competición
+            new EventosDeportivos();
+        });
     }
 }
