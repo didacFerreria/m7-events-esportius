@@ -11,5 +11,6 @@ public interface UsuarioDAO {
     void agregarUsuario(Usuario usuario);
     List<Usuario> listarUsuarios();
     Usuario buscarUsuarioPorEmail(String email);
+    Usuario buscarUsuario(String nombre);
     void eliminarUsuario(String email);
 }

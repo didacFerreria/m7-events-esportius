@@ -23,15 +23,23 @@ public class DataController {
 
     // Método de inicialización automática
     public static void inicializarDatos() {
+        // Agregar usuarios por defecto
+        crearUsuariosPorDefecto();
+        // Agregar competiciones por defecto
         if (competicionDAO.listarCompeticiones().isEmpty()) {
             crearCompeticionPorDefecto();
         }
     }
 
+    private static void crearUsuariosPorDefecto() {
+        Usuario usuario = new Usuario("admin", "1", "administrador@gmail.com","1234","Administrador");
+        usuarioDAO.agregarUsuario(usuario);
+    }
+
     private static void crearCompeticionPorDefecto() {
         Competicion competicion = new Competicion("Liga Inicial", "Campionat de Basquet (Torneig)", LocalDate.now(), 10, "Senior");
 
-        for (int i = 1; i <= 8; i++) {
+        for (int i = 1; i <= 10; i++) {
             Equipo equipo = new Equipo("E" + i, 20); // Jugadores máximos 20
             for (int j = 1; j <= 5 + (int)(Math.random() * 19); j++) {
                 equipo.agregarJugador(new Jugador(
@@ -56,6 +64,10 @@ public class DataController {
 
     public static Usuario buscarUsuarioPorEmail(String email) {
         return usuarioDAO.buscarUsuarioPorEmail(email);
+    }
+
+    public Usuario buscarUsuario(String nombre) {
+        return usuarioDAO.buscarUsuario(nombre);
     }
 
     public static void eliminarUsuario(String email) {

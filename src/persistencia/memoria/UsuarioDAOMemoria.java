@@ -31,6 +31,14 @@ public class UsuarioDAOMemoria implements UsuarioDAO {
     }
 
     @Override
+    public Usuario buscarUsuario(String nombre) {
+        return usuarios.stream()
+                .filter(u -> u.getNombre().equalsIgnoreCase(nombre))
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
     public void eliminarUsuario(String email) {
         usuarios.removeIf(u -> u.getEmail().equalsIgnoreCase(email));
     }

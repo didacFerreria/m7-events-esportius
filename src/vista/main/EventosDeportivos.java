@@ -8,6 +8,7 @@ import controlador.DataController;
 import vista.EventosListaInterfaz;
 import vista.UsuariosListaInterfaz;
 import vista.CompeticionIniciarInterfaz;
+import vista.UsuariosLoginDialogo;
 
 public class EventosDeportivos extends JFrame {
 
@@ -17,6 +18,11 @@ public class EventosDeportivos extends JFrame {
     public EventosDeportivos() {
         // Inicializar DataController (gestiona todos los DAOs)
         dataController = new DataController();
+
+        UsuariosLoginDialogo loginDialog = new UsuariosLoginDialogo(this, dataController);
+        if (!loginDialog.isAutenticado()) {
+            System.exit(0);  // Cerrar si el usuario no se autentica
+        }
 
         setTitle("Aplicació Registre Usuaris");
         setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);

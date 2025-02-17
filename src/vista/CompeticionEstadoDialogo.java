@@ -1,20 +1,22 @@
 package vista;
 
+import controlador.DataController;
+import modelo.Competicion;
+import modelo.Enfrentamiento;
+import modelo.Equipo;
+
 import javax.swing.*;
 import java.awt.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import controlador.DataController;
-import modelo.Competicion;
-import modelo.Enfrentamiento;
-import modelo.Equipo;
 
 public class CompeticionEstadoDialogo extends JDialog {
     private Competicion competicion;
     private DataController dataController;
     private JPanel panelTorneo;
     private JButton btnSimular;
+    private boolean rondaFinalizada = false;  // Para controlar el estado de la simulación
 
     public CompeticionEstadoDialogo(JFrame parent, Competicion competicion, DataController dataController) {
         super(parent, "Estado de la competición " + competicion.getNombre(), true);
@@ -124,6 +126,8 @@ public class CompeticionEstadoDialogo extends JDialog {
     }
 
     private void generarVistaTorneo() {
+        panelTorneo.removeAll();
+
         List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
 
         if (enfrentamientos == null || enfrentamientos.isEmpty()) {
@@ -139,12 +143,16 @@ public class CompeticionEstadoDialogo extends JDialog {
             competicion.setEnfrentamientos(enfrentamientos);
         }
 
+        // Crear estructura de paneles para simular la cuadrícula de torneo
         JPanel panelTorneoVista = new JPanel();
-        panelTorneoVista.setLayout(new GridLayout(enfrentamientos.size(), 2, 10, 10));
+        panelTorneoVista.setLayout(new GridLayout(enfrentamientos.size(), 3, 20, 10)); // Coloca enfrentamientos de forma ordenada
 
         for (Enfrentamiento enfrentamiento : enfrentamientos) {
             JPanel panel1 = crearPanelEquipo(enfrentamiento.getEquipo1());
             JPanel panel2 = crearPanelEquipo(enfrentamiento.getEquipo2());
+
+            JLabel lblVS = new JLabel("VS", SwingConstants.CENTER);
+            lblVS.setFont(new Font("Arial", Font.BOLD, 16));
 
             if (enfrentamiento.isFinalizado()) {
                 if (enfrentamiento.getGanador().equals(enfrentamiento.getEquipo1())) {
@@ -157,6 +165,7 @@ public class CompeticionEstadoDialogo extends JDialog {
             }
 
             panelTorneoVista.add(panel1);
+            panelTorneoVista.add(lblVS);
             panelTorneoVista.add(panel2);
         }
 
@@ -189,13 +198,64 @@ public class CompeticionEstadoDialogo extends JDialog {
         datosEquipo.add(lblJugadores);
 
         panelEquipo.add(datosEquipo, BorderLayout.CENTER);
+
+        // **Determinar color del equipo según resultado**
+        if (competicion.getEnfrentamientos() != null) {
+            for (Enfrentamiento enfrentamiento : competicion.getEnfrentamientos()) {
+                if (enfrentamiento.isFinalizado()) {
+                    if (enfrentamiento.getGanador().equals(equipo)) {
+                        panelEquipo.setBackground(Color.GREEN);  // **Ganador en verde**
+                    } else if (enfrentamiento.getEquipo1().equals(equipo) || enfrentamiento.getEquipo2().equals(equipo)) {
+                        panelEquipo.setBackground(Color.RED);  // **Perdedor en rojo**
+                    }
+                }
+            }
+        }
+
         return panelEquipo;
     }
 
     private void simularPartidos() {
-        for (Enfrentamiento enfrentamiento : competicion.getEnfrentamientos()) {
-            enfrentamiento.simular();
+        List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
+
+        if (!rondaFinalizada) {
+            // **Paso 1: Marcar los enfrentamientos como finalizados y actualizar la vista**
+            for (Enfrentamiento enfrentamiento : enfrentamientos) {
+                enfrentamiento.simular();  // Simular el ganador
+            }
+            rondaFinalizada = true;
+            btnSimular.setText("Siguiente Ronda");  // Cambiar el texto del botón
+        } else {
+            // **Comprobación: Si solo queda un equipo, el torneo ha terminado**
+            if (enfrentamientos.size() == 1) {
+                JOptionPane.showMessageDialog(this,
+                        "¡El torneo ha finalizado! El ganador es: " + enfrentamientos.get(0).getGanador().getNombre(),
+                        "Torneo Finalizado",
+                        JOptionPane.INFORMATION_MESSAGE);
+                btnSimular.setEnabled(false);  // Deshabilitar el botón para evitar reinicios
+                return;  // Salimos del método para no generar nuevas rondas
+            }
+
+            // **Paso 2: Avanzar a la siguiente fase**
+            List<Enfrentamiento> nuevaRonda = new ArrayList<>();
+
+            for (int i = 0; i < enfrentamientos.size(); i += 2) {
+                if (i + 1 < enfrentamientos.size()) {
+                    Equipo ganador1 = enfrentamientos.get(i).getGanador();
+                    Equipo ganador2 = enfrentamientos.get(i + 1).getGanador();
+                    nuevaRonda.add(new Enfrentamiento(ganador1, ganador2));
+                }
+            }
+
+            // **Actualizar los enfrentamientos de la competición**
+            competicion.setEnfrentamientos(nuevaRonda);
+            rondaFinalizada = false;
+            btnSimular.setText("Simular Partidos");
         }
+
         generarVistaSegunCompeticion();
     }
+
+
+
 }
