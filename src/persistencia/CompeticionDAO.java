@@ -9,8 +9,7 @@ public interface CompeticionDAO {
     List<Competicion> listarCompeticiones();
     Competicion buscarCompeticionPorNombre(String nombre);
     void eliminarCompeticion(String nombre);
-
-    // Nuevos métodos
+    List<Competicion> listarCompeticionesFinalizadas();
     void guardarEnfrentamientos(String nombreCompeticion, List<Enfrentamiento> enfrentamientos);
     List<Enfrentamiento> obtenerEnfrentamientos(String nombreCompeticion);
 }

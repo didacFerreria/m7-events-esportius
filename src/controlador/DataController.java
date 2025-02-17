@@ -32,12 +32,17 @@ public class DataController {
     }
 
     private static void crearUsuariosPorDefecto() {
-        Usuario usuario = new Usuario("admin", "1", "administrador@gmail.com","1234","Administrador");
+        Usuario usuario = new Usuario(
+                "admin", "1", "administrador@gmail.com",
+                "1234","Administrador");
         usuarioDAO.agregarUsuario(usuario);
     }
 
     private static void crearCompeticionPorDefecto() {
-        Competicion competicion = new Competicion("Liga Inicial", "Campionat de Basquet (Torneig)", LocalDate.now(), 10, "Senior");
+        Competicion competicion = new Competicion("Liga Inicial",
+                "Competició Natació", LocalDate.now(),
+                10, "Senior");
+        //competicion.finalizarCompeticion("E1");
 
         for (int i = 1; i <= 10; i++) {
             Equipo equipo = new Equipo("E" + i, 20); // Jugadores máximos 20
@@ -124,4 +129,9 @@ public class DataController {
     public static void eliminarJugador(String nombre) {
         jugadorDAO.eliminarJugador(nombre);
     }
+
+    public List<Competicion> obtenerCompeticionesFinalizadas() {
+        return competicionDAO.listarCompeticionesFinalizadas();
+    }
+
 }

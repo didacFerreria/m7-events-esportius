@@ -44,9 +44,14 @@ public class CompeticionEstadoDialogo extends JDialog {
         btnSimular.setPreferredSize(new Dimension(150, 40));
         btnSimular.addActionListener(e -> simularPartidos());
 
+        JButton btnFinalizar = new JButton("Finalizar Competición");
+        btnFinalizar.setPreferredSize(new Dimension(150, 40));
+        btnFinalizar.addActionListener(e -> finalizarCompeticion());
+
         JPanel panelBoton = new JPanel();
         panelBoton.setBorder(BorderFactory.createEmptyBorder(10, 0, 10, 0));
         panelBoton.add(btnSimular);
+        panelBoton.add(btnFinalizar);
         add(panelBoton, BorderLayout.SOUTH);
 
         // Generar vista según el tipo de competición
@@ -61,7 +66,8 @@ public class CompeticionEstadoDialogo extends JDialog {
 
         if ("Campionat de Basquet (Lliga)".equals(competicion.getTipoEvento())) {
             generarVistaLiga();
-        } else if ("Cursa de Muntanya".equals(competicion.getTipoEvento())) {
+        } else if ("Cursa de Muntanya".equals(competicion.getTipoEvento()) ||
+                "Competició Natació".equals(competicion.getTipoEvento())) {
             generarVistaCarrera();
         } else if ("Campionat de Basquet (Torneig)".equals(competicion.getTipoEvento())) {
             generarVistaTorneo();
@@ -72,52 +78,65 @@ public class CompeticionEstadoDialogo extends JDialog {
     }
 
     private void generarVistaLiga() {
-        List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
+        panelTorneo.removeAll();
 
+        // Obtener enfrentamientos de la competición o generarlos en la primera ronda
+        List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
         if (enfrentamientos == null || enfrentamientos.isEmpty()) {
             List<Equipo> equipos = new ArrayList<>(competicion.getEquipos());
-            Collections.shuffle(equipos);
-
-            enfrentamientos = new ArrayList<>();
-            for (int i = 0; i < equipos.size(); i += 2) {
-                if (i + 1 < equipos.size()) {
-                    enfrentamientos.add(new Enfrentamiento(equipos.get(i), equipos.get(i + 1)));
-                }
-            }
-            competicion.setEnfrentamientos(enfrentamientos);
+            competicion.setEnfrentamientos(generarPartidosLiga(equipos)); // Genera enfrentamientos sin cambiar el orden
+            enfrentamientos = competicion.getEnfrentamientos();
         }
 
-        JPanel panelMatches = new JPanel();
-        panelMatches.setLayout(new GridLayout(0, 3, 10, 15));
+        JPanel panelMatches = new JPanel(new GridLayout(0, 3, 10, 15));
         panelMatches.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
         for (Enfrentamiento enfrentamiento : enfrentamientos) {
             JPanel equipoPanel1 = crearPanelEquipo(enfrentamiento.getEquipo1());
-            panelMatches.add(equipoPanel1);
-
             JLabel lblVS = new JLabel("VS", SwingConstants.CENTER);
             lblVS.setFont(new Font("Arial", Font.BOLD, 16));
-            lblVS.setBorder(BorderFactory.createEmptyBorder(0, 10, 0, 10));
-            panelMatches.add(lblVS);
 
-            if (enfrentamiento.getEquipo2() != null) {
-                JPanel equipoPanel2 = crearPanelEquipo(enfrentamiento.getEquipo2());
-                panelMatches.add(equipoPanel2);
-            } else {
-                panelMatches.add(new JPanel());
+            JPanel equipoPanel2 = enfrentamiento.getEquipo2() != null ? crearPanelEquipo(enfrentamiento.getEquipo2()) : new JPanel();
+
+            // **Respetar el orden original en la misma ronda**
+            if (enfrentamiento.isFinalizado()) {
+                if (enfrentamiento.getGanador().equals(enfrentamiento.getEquipo1())) {
+                    equipoPanel1.setBackground(Color.GREEN);
+                    equipoPanel2.setBackground(Color.RED);
+                } else {
+                    equipoPanel1.setBackground(Color.RED);
+                    equipoPanel2.setBackground(Color.GREEN);
+                }
             }
+
+            panelMatches.add(equipoPanel1);
+            panelMatches.add(lblVS);
+            panelMatches.add(equipoPanel2);
         }
 
         panelTorneo.add(panelMatches);
     }
 
     private void generarVistaCarrera() {
+        List<Equipo> equipos = new ArrayList<>(competicion.getEquipos());
+
+        if (rondaFinalizada) {
+            Collections.shuffle(equipos); // Seleccionar aleatoriamente los primeros 3 lugares
+        }
+
         JPanel panelCarrera = new JPanel();
         panelCarrera.setLayout(new BoxLayout(panelCarrera, BoxLayout.Y_AXIS));
         panelCarrera.setBorder(BorderFactory.createEmptyBorder(10, 20, 10, 20));
 
-        for (Equipo equipo : competicion.getEquipos()) {
-            JPanel equipoPanel = crearPanelEquipo(equipo);
+        for (int i = 0; i < equipos.size(); i++) {
+            JPanel equipoPanel = crearPanelEquipo(equipos.get(i));
+
+            if (rondaFinalizada) {
+                if (i == 0) equipoPanel.setBackground(Color.GREEN);
+                if (i == 1) equipoPanel.setBackground(Color.YELLOW);
+                if (i == 2) equipoPanel.setBackground(Color.ORANGE);
+            }
+
             panelCarrera.add(equipoPanel);
             panelCarrera.add(Box.createVerticalStrut(10));
         }
@@ -177,7 +196,8 @@ public class CompeticionEstadoDialogo extends JDialog {
         panelEquipo.setBorder(BorderFactory.createLineBorder(Color.BLACK, 2));
         panelEquipo.setPreferredSize(new Dimension(260, 80));
 
-        JLabel imagen = new JLabel(new ImageIcon(getClass().getClassLoader().getResource("resources/equipo-perfil.png")));
+        JLabel imagen = new JLabel(new ImageIcon(
+                getClass().getClassLoader().getResource("resources/equipo-perfil.png")));
         imagen.setBorder(BorderFactory.createEmptyBorder(5, 10, 5, 15));
         panelEquipo.add(imagen, BorderLayout.WEST);
 
@@ -216,29 +236,61 @@ public class CompeticionEstadoDialogo extends JDialog {
     }
 
     private void simularPartidos() {
-        List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
+        // 📌 LIGA: No cambia el orden en la misma ronda
+        if ("Campionat de Basquet (Lliga)".equals(competicion.getTipoEvento())) {
+            if (!rondaFinalizada) {
+                // Marcar los ganadores sin cambiar los enfrentamientos aún
+                for (Enfrentamiento enfrentamiento : competicion.getEnfrentamientos()) {
+                    enfrentamiento.simular();
+                }
 
+                rondaFinalizada = true;
+                btnSimular.setText("Siguiente Ronda");
+            } else {
+                // Generar nueva ronda con enfrentamientos distintos
+                competicion.setEnfrentamientos(generarPartidosLiga(new ArrayList<>(competicion.getEquipos())));
+                rondaFinalizada = false;
+                btnSimular.setText("Simular Partidos");
+            }
+
+            generarVistaSegunCompeticion();
+            return;
+        }
+
+        // 📌 CARRERA/NATACIÓN: No muestra ganadores antes de presionar el botón
+        if ("Cursa de Muntanya".equals(competicion.getTipoEvento()) || "Competició Natació".equals(competicion.getTipoEvento())) {
+            if (!rondaFinalizada) {
+                // Desordenamos y asignamos 3 primeros puestos aleatorios
+                List<Equipo> equipos = new ArrayList<>(competicion.getEquipos());
+                Collections.shuffle(equipos);
+                competicion.setEnfrentamientos(Collections.singletonList(new Enfrentamiento(equipos.get(0), equipos.get(1))));
+                rondaFinalizada = true;
+                btnSimular.setEnabled(false); // Bloquea simulación tras mostrar resultados
+            }
+
+            generarVistaSegunCompeticion();
+            return;
+        }
+
+        // 📌 TORNEO: Se bloquea al final
+        List<Enfrentamiento> enfrentamientos = competicion.getEnfrentamientos();
         if (!rondaFinalizada) {
-            // **Paso 1: Marcar los enfrentamientos como finalizados y actualizar la vista**
             for (Enfrentamiento enfrentamiento : enfrentamientos) {
-                enfrentamiento.simular();  // Simular el ganador
+                enfrentamiento.simular();
             }
             rondaFinalizada = true;
-            btnSimular.setText("Siguiente Ronda");  // Cambiar el texto del botón
+            btnSimular.setText("Siguiente Ronda");
         } else {
-            // **Comprobación: Si solo queda un equipo, el torneo ha terminado**
             if (enfrentamientos.size() == 1) {
                 JOptionPane.showMessageDialog(this,
                         "¡El torneo ha finalizado! El ganador es: " + enfrentamientos.get(0).getGanador().getNombre(),
                         "Torneo Finalizado",
                         JOptionPane.INFORMATION_MESSAGE);
-                btnSimular.setEnabled(false);  // Deshabilitar el botón para evitar reinicios
-                return;  // Salimos del método para no generar nuevas rondas
+                btnSimular.setEnabled(false);
+                return;
             }
 
-            // **Paso 2: Avanzar a la siguiente fase**
             List<Enfrentamiento> nuevaRonda = new ArrayList<>();
-
             for (int i = 0; i < enfrentamientos.size(); i += 2) {
                 if (i + 1 < enfrentamientos.size()) {
                     Equipo ganador1 = enfrentamientos.get(i).getGanador();
@@ -246,14 +298,50 @@ public class CompeticionEstadoDialogo extends JDialog {
                     nuevaRonda.add(new Enfrentamiento(ganador1, ganador2));
                 }
             }
-
-            // **Actualizar los enfrentamientos de la competición**
             competicion.setEnfrentamientos(nuevaRonda);
             rondaFinalizada = false;
             btnSimular.setText("Simular Partidos");
         }
 
         generarVistaSegunCompeticion();
+    }
+
+    private List<Enfrentamiento> generarPartidosLiga(List<Equipo> equipos) {
+        List<Enfrentamiento> enfrentamientosLiga = new ArrayList<>();
+        Collections.shuffle(equipos);  // Para mezclar los equipos en cada ronda
+
+        // Generamos enfrentamientos por parejas (solo una ronda a la vez)
+        for (int i = 0; i < equipos.size(); i += 2) {
+            if (i + 1 < equipos.size()) {
+                enfrentamientosLiga.add(new Enfrentamiento(equipos.get(i), equipos.get(i + 1)));
+            }
+        }
+
+        return enfrentamientosLiga;
+    }
+
+    private void finalizarCompeticion() {
+        if ("Campionat de Basquet (Torneig)".equals(competicion.getTipoEvento())) {
+            // 🏆 Si es torneo, el ganador es el último en pie
+            if (!competicion.getEnfrentamientos().isEmpty()) {
+                Enfrentamiento finalMatch = competicion.getEnfrentamientos().get(competicion.getEnfrentamientos().size() - 1);
+                if (finalMatch.isFinalizado()) {
+                    competicion.finalizarCompeticion(String.valueOf(finalMatch.getGanador()));
+                }
+            }
+        } else if ("Cursa de Muntanya".equals(competicion.getTipoEvento()) ||
+                "Competició Natació".equals(competicion.getTipoEvento())) {
+            // 🏁 Si es carrera/natación, el ganador es el primero en la lista final
+            if (!competicion.getEquipos().isEmpty()) {
+                competicion.finalizarCompeticion(competicion.getEquipos().get(0).getNombre()); // El primero es el ganador
+            }
+        }
+
+        competicion.setEstado("Finalizada");
+        JOptionPane.showMessageDialog(this,
+                "La competición ha sido finalizada. Resultados guardados.",
+                "Competición Finalizada", JOptionPane.INFORMATION_MESSAGE);
+        btnSimular.setEnabled(false);
     }
 
 

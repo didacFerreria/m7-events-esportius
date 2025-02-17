@@ -13,6 +13,7 @@ public class Competicion {
     private String estado; // Estado de la competición
     private ArrayList<Equipo> equipos;
     private List<Enfrentamiento> enfrentamientos; // Nuevo atributo para los enfrentamientos
+    private String ganador;
 
     public Competicion(String nombre, String tipoEvento, LocalDate fecha, int numeroEquipos, String categoria) {
         this.nombre = nombre;
@@ -60,6 +61,20 @@ public class Competicion {
     public void setEnfrentamientos(List<Enfrentamiento> enfrentamientos) {
         this.enfrentamientos = enfrentamientos;
     }
+
+    public String getGanador() {
+        return ganador;
+    }
+
+    public boolean esFinalizada() {
+        return "Finalizada".equals(estado);
+    }
+
+    public void finalizarCompeticion(String ganador) {
+        this.ganador = ganador;
+        this.estado = "Finalizada";
+    }
+
 
     @Override
     public String toString() {

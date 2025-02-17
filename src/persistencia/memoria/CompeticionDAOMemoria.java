@@ -46,4 +46,16 @@ public class CompeticionDAOMemoria implements CompeticionDAO {
         Competicion competicion = buscarCompeticionPorNombre(nombreCompeticion);
         return (competicion != null) ? competicion.getEnfrentamientos() : new ArrayList<>();
     }
+
+    @Override
+    public List<Competicion> listarCompeticionesFinalizadas() {
+        List<Competicion> finalizadas = new ArrayList<>();
+        for (Competicion c : competiciones) {
+            if ("Finalizada".equals(c.getEstado())) {
+                finalizadas.add(c);
+            }
+        }
+        return finalizadas;
+    }
+
 }

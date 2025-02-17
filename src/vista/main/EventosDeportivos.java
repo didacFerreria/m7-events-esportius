@@ -5,10 +5,7 @@ import java.awt.*;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import controlador.DataController;
-import vista.EventosListaInterfaz;
-import vista.UsuariosListaInterfaz;
-import vista.CompeticionIniciarInterfaz;
-import vista.UsuariosLoginDialogo;
+import vista.*;
 
 public class EventosDeportivos extends JFrame {
 
@@ -108,10 +105,14 @@ public class EventosDeportivos extends JFrame {
         // Panel para botones flotantes
         JLayeredPane layeredPane = getLayeredPane();
 
-        btnEventos = crearBoton("boton-eventos.png", "Abrir eventos", e -> new EventosListaInterfaz(dataController));
-        btnUsuarios = crearBoton("boton-usuarios.png", "Abrir usuarios", e -> new UsuariosListaInterfaz(dataController));
-        btnCompeticionIniciar = crearBoton("boton-competicion-iniciar.png", "Iniciar competición", e -> new CompeticionIniciarInterfaz(dataController));
-        btnCompeticionResultado = crearBoton("boton-competicion-resultados.png", "Ver resultados", e -> new CompeticionIniciarInterfaz(dataController));
+        btnEventos = crearBoton("boton-eventos.png", "Abrir eventos",
+                e -> new EventosListaInterfaz(dataController));
+        btnUsuarios = crearBoton("boton-usuarios.png", "Abrir usuarios",
+                e -> new UsuariosListaInterfaz(dataController));
+        btnCompeticionIniciar = crearBoton("boton-competicion-iniciar.png",
+                "Iniciar competición", e -> new CompeticionIniciarInterfaz(dataController));
+        btnCompeticionResultado = crearBoton("boton-competicion-resultados.png",
+                "Ver resultados", e -> new CompeticionResultadosInterfaz(dataController));
 
         layeredPane.add(btnEventos, JLayeredPane.PALETTE_LAYER);
         layeredPane.add(btnUsuarios, JLayeredPane.PALETTE_LAYER);
