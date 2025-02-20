@@ -40,7 +40,7 @@ public class DataController {
 
     private static void crearCompeticionPorDefecto() {
         Competicion competicion = new Competicion("Liga Inicial",
-                "Competició Natació", LocalDate.now(),
+                "Campionat de Basquet (Lliga)", LocalDate.now(), // Campionat de Basquet (Torneig/Lliga) / Competició Natació
                 10, "Senior");
         //competicion.finalizarCompeticion("E1");
 

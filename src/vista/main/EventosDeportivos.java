@@ -54,6 +54,7 @@ public class EventosDeportivos extends JFrame {
 
         // Conectar con CompeticionIniciarInterfaz
         iniciMenuItem.addActionListener(e -> new CompeticionIniciarInterfaz(dataController));
+        resultatsMenuItem.addActionListener(e -> new CompeticionResultadosInterfaz(dataController));
 
         competicioMenu.add(iniciMenuItem);
         competicioMenu.add(resultatsMenuItem);
