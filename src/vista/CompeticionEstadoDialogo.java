@@ -324,7 +324,8 @@ public class CompeticionEstadoDialogo extends JDialog {
         if ("Campionat de Basquet (Torneig)".equals(competicion.getTipoEvento())) {
             // 🏆 Si es torneo, el ganador es el último en pie
             if (!competicion.getEnfrentamientos().isEmpty()) {
-                Enfrentamiento finalMatch = competicion.getEnfrentamientos().get(competicion.getEnfrentamientos().size() - 1);
+                Enfrentamiento finalMatch = competicion.getEnfrentamientos().get(competicion.
+                        getEnfrentamientos().size() - 1);
                 if (finalMatch.isFinalizado()) {
                     competicion.finalizarCompeticion(String.valueOf(finalMatch.getGanador()));
                 }
@@ -333,7 +334,8 @@ public class CompeticionEstadoDialogo extends JDialog {
                 "Competició Natació".equals(competicion.getTipoEvento())) {
             // 🏁 Si es carrera/natación, el ganador es el primero en la lista final
             if (!competicion.getEquipos().isEmpty()) {
-                competicion.finalizarCompeticion(competicion.getEquipos().get(0).getNombre()); // El primero es el ganador
+                competicion.finalizarCompeticion(competicion.getEquipos().get(0).getNombre());
+                // El primero es el ganador
             }
         }
 

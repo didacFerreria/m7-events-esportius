@@ -35,7 +35,8 @@ public class EquiposAgregarDialogo extends JDialog {
         panelSuperior.add(txtNombreEquipo);
 
         panelSuperior.add(new JLabel("Cantidad de jugadores:"));
-        spnCantidadJugadores = new JSpinner(new SpinnerNumberModel(cantidadJugadores, cantidadJugadores, 50, 1));
+        spnCantidadJugadores = new JSpinner(new SpinnerNumberModel(cantidadJugadores,
+                cantidadJugadores, 50, 1));
         spnCantidadJugadores.addChangeListener(e -> actualizarTablaJugadores());
         panelSuperior.add(spnCantidadJugadores);
 

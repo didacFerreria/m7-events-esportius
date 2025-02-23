@@ -15,7 +15,7 @@ public class UsuariosAgregarDialogo extends JDialog {
 
     public UsuariosAgregarDialogo(JFrame parent, DataController dataController) {
         super(parent, "Agregar Usuario", true);
-        this.dataController = dataController; // Se guarda la referencia al DataController
+        this.dataController = dataController;
 
         setLayout(new GridLayout(6, 2, 10, 10));
         setSize(400, 300);
@@ -56,13 +56,16 @@ public class UsuariosAgregarDialogo extends JDialog {
         String rol = (String) cmbRol.getSelectedItem();
 
         if (nombre.isEmpty() || apellido.isEmpty() || email.isEmpty() || password.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Todos los campos son obligatorios.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         Usuario nuevoUsuario = new Usuario(nombre, apellido, email, password, rol);
         dataController.agregarUsuario(nuevoUsuario);
-        JOptionPane.showMessageDialog(this, "Usuario agregado exitosamente.");
+        JOptionPane.showMessageDialog(this,
+                "Usuario agregado exitosamente.");
         dispose();
     }
 }

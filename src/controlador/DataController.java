@@ -21,7 +21,7 @@ public class DataController {
     private static EquipoDAO equipoDAO = new EquipoDAOMemoria();
     private static JugadorDAO jugadorDAO = new JugadorDAOMemoria();
 
-    // Método de inicialización automática
+    // Método de inicialización de prueba
     public static void inicializarDatos() {
         // Agregar usuarios por defecto
         crearUsuariosPorDefecto();
@@ -39,10 +39,46 @@ public class DataController {
     }
 
     private static void crearCompeticionPorDefecto() {
+        // LIGA
         Competicion competicion = new Competicion("Liga Inicial",
-                "Campionat de Basquet (Lliga)", LocalDate.now(), // Campionat de Basquet (Torneig/Lliga) / Competició Natació
+                "Campionat de Basquet (Lliga)", LocalDate.now(),
                 10, "Senior");
-        //competicion.finalizarCompeticion("E1");
+
+        for (int i = 1; i <= 10; i++) {
+            Equipo equipo = new Equipo("E" + i, 20); // Jugadores máximos 20
+            for (int j = 1; j <= 5 + (int)(Math.random() * 19); j++) {
+                equipo.agregarJugador(new Jugador(
+                        "Jugador " + j, "Apellido " + j,
+                        "email" + j + "@example.com", j, "Posición"));
+            }
+            equipoDAO.agregarEquipo(equipo);
+            competicion.agregarEquipo(equipo);
+        }
+
+        competicionDAO.agregarCompeticion(competicion);
+
+        // TORNEO
+        competicion = new Competicion("Torneig Inicial",
+                "Campionat de Basquet (Torneig)", LocalDate.now(),
+                10, "Senior");
+
+        for (int i = 1; i <= 10; i++) {
+            Equipo equipo = new Equipo("E" + i, 20); // Jugadores máximos 20
+            for (int j = 1; j <= 5 + (int)(Math.random() * 19); j++) {
+                equipo.agregarJugador(new Jugador(
+                        "Jugador " + j, "Apellido " + j,
+                        "email" + j + "@example.com", j, "Posición"));
+            }
+            equipoDAO.agregarEquipo(equipo);
+            competicion.agregarEquipo(equipo);
+        }
+
+        competicionDAO.agregarCompeticion(competicion);
+
+        // CARRERA
+        competicion = new Competicion("Cursa Inicial",
+                "Cursa de Muntanya", LocalDate.now(),
+                10, "Senior");
 
         for (int i = 1; i <= 10; i++) {
             Equipo equipo = new Equipo("E" + i, 20); // Jugadores máximos 20

@@ -43,7 +43,8 @@ public class EventosListaInterfaz extends JFrame {
         add(panelFiltros, BorderLayout.NORTH);
 
         // Modelo de la tabla
-        String[] columnas = {"Nombre", "Tipo de Evento", "Fecha", "Número de Equipos", "Categoría", "Estado"};
+        String[] columnas = {"Nombre", "Tipo de Evento", "Fecha", "Número de Equipos",
+                "Categoría", "Estado"};
         modeloTabla = new DefaultTableModel(columnas, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -62,8 +63,10 @@ public class EventosListaInterfaz extends JFrame {
                 if (e.getClickCount() == 2) { // Doble clic
                     int filaSeleccionada = tablaEventos.getSelectedRow();
                     if (filaSeleccionada != -1) {
-                        String nombreEvento = (String) modeloTabla.getValueAt(filaSeleccionada, 0);
-                        Competicion competicion = dataController.buscarCompeticionPorNombre(nombreEvento);
+                        String nombreEvento = (String) modeloTabla.
+                                getValueAt(filaSeleccionada, 0);
+                        Competicion competicion = dataController.
+                                buscarCompeticionPorNombre(nombreEvento);
                         if (competicion != null) {
                             new EventosDetalleDialogo(EventosListaInterfaz.this, competicion);
                         }
@@ -115,8 +118,9 @@ public class EventosListaInterfaz extends JFrame {
 
         for (Competicion competicion : competicionesFiltradas) {
             modeloTabla.addRow(new Object[]{
-                    competicion.getNombre(), competicion.getTipoEvento(), competicion.getFecha(),
-                    competicion.getNumeroEquipos(), competicion.getCategoria(), competicion.getEstado()
+                    competicion.getNombre(), competicion.getTipoEvento(),
+                    competicion.getFecha(), competicion.getNumeroEquipos(),
+                    competicion.getCategoria(), competicion.getEstado()
             });
         }
     }

@@ -15,7 +15,7 @@ public class UsuariosListaInterfaz extends JFrame {
     private DataController dataController;
 
     public UsuariosListaInterfaz(DataController dataController) {
-        this.dataController = dataController; // Usamos DataController en lugar del DAO directamente
+        this.dataController = dataController;
 
         setTitle("Gestión de Usuarios");
         setSize(600, 400);
@@ -60,7 +60,8 @@ public class UsuariosListaInterfaz extends JFrame {
         List<Usuario> usuarios = dataController.getUsuarios();
         for (Usuario usuario : usuarios) {
             modeloTabla.addRow(new Object[]{
-                    usuario.getNombre(), usuario.getApellido(), usuario.getEmail(), usuario.getRol(), usuario.getFechaAlta()
+                    usuario.getNombre(), usuario.getApellido(),
+                    usuario.getEmail(), usuario.getRol(), usuario.getFechaAlta()
             });
         }
     }
@@ -74,13 +75,17 @@ public class UsuariosListaInterfaz extends JFrame {
         int selectedRow = tablaUsuarios.getSelectedRow();
         if (selectedRow != -1) {
             String email = (String) modeloTabla.getValueAt(selectedRow, 2);
-            int confirm = JOptionPane.showConfirmDialog(this, "¿Estás seguro de que quieres eliminar a este usuario?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(this,
+                    "¿Estás seguro de que quieres eliminar a este usuario?",
+                    "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
             if (confirm == JOptionPane.YES_OPTION) {
                 dataController.eliminarUsuario(email);
                 actualizarTabla();
             }
         } else {
-            JOptionPane.showMessageDialog(this, "Selecciona un usuario para eliminar.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "Selecciona un usuario para eliminar.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 }

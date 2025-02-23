@@ -81,7 +81,8 @@ public class CompeticionResultadosInterfaz extends JFrame {
     private String obtenerGanadorCompeticion(Competicion competicion) {
         if(competicion.getGanador() != null) {
             return competicion.getGanador();
-        } else if (competicion.getEnfrentamientos() != null && !competicion.getEnfrentamientos().isEmpty()) {
+        } else if (competicion.getEnfrentamientos() != null && !competicion.getEnfrentamientos().
+                isEmpty()) {
             Enfrentamiento ultimoEnfrentamiento =
                     competicion.getEnfrentamientos().get(competicion.getEnfrentamientos().size() - 1);
 

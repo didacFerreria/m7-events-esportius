@@ -13,7 +13,7 @@ public class EventosDeportivos extends JFrame {
     private JButton btnEventos, btnUsuarios, btnCompeticionIniciar, btnCompeticionResultado;
 
     public EventosDeportivos() {
-        // Inicializar DataController (gestiona todos los DAOs)
+        // (gestiona todos los DAOs)
         dataController = new DataController();
 
         UsuariosLoginDialogo loginDialog = new UsuariosLoginDialogo(this, dataController);
@@ -52,13 +52,14 @@ public class EventosDeportivos extends JFrame {
         JMenuItem iniciMenuItem = new JMenuItem("Iniciar");
         JMenuItem resultatsMenuItem = new JMenuItem("Resultados");
 
-        // Conectar con CompeticionIniciarInterfaz
+        // Conectar con Competición Iniciar/Resultados
         iniciMenuItem.addActionListener(e -> new CompeticionIniciarInterfaz(dataController));
         resultatsMenuItem.addActionListener(e -> new CompeticionResultadosInterfaz(dataController));
 
         competicioMenu.add(iniciMenuItem);
         competicioMenu.add(resultatsMenuItem);
 
+        // Otras opciones del menu
         JMenu ajudaMenu = new JMenu("Ayuda");
         ajudaMenu.add(new JMenuItem("Buscar"));
 

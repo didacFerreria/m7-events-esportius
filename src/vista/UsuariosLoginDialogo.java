@@ -33,13 +33,13 @@ public class UsuariosLoginDialogo extends JDialog {
         panelContenido.add(Box.createVerticalStrut(10));
 
         JPanel panelUsuario = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelUsuario.add(new JLabel("Usuario:"));
+        panelUsuario.add(new JLabel("Usuario (admin):"));
         txtUsuario = new JTextField(20);
         panelUsuario.add(txtUsuario);
         panelContenido.add(panelUsuario);
 
         JPanel panelContrasena = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        panelContrasena.add(new JLabel("Contraseña:"));
+        panelContrasena.add(new JLabel("Contraseña (1234):"));
         txtContrasena = new JPasswordField(15);
         panelContrasena.add(txtContrasena);
 

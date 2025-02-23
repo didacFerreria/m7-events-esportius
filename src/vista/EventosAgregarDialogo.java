@@ -49,7 +49,8 @@ public class EventosAgregarDialogo extends JDialog {
         panelDatos.add(lblNumeroEquipos);
 
         panelDatos.add(new JLabel("Categoría:"));
-        cmbCategoria = new JComboBox<>(new String[]{"Mini", "Preinfantil", "Infantil", "Cadet", "Junior", "Senior"});
+        cmbCategoria = new JComboBox<>(new String[]{"Mini", "Preinfantil", "Infantil",
+                "Cadet", "Junior", "Senior"});
         panelDatos.add(cmbCategoria);
 
         tabbedPane.addTab("Datos Evento", panelDatos);
@@ -81,10 +82,13 @@ public class EventosAgregarDialogo extends JDialog {
     }
 
     private void agregarEquipo() {
-        String nombreEquipo = JOptionPane.showInputDialog(this, "Nombre del equipo:");
+        String nombreEquipo = JOptionPane.showInputDialog(this,
+                "Nombre del equipo:");
         if (nombreEquipo != null && !nombreEquipo.trim().isEmpty()) {
-            int cantidadJugadores = Integer.parseInt(JOptionPane.showInputDialog(this, "Número de jugadores:"));
-            EquiposAgregarDialogo dialogoEquipo = new EquiposAgregarDialogo(this, nombreEquipo, cantidadJugadores);
+            int cantidadJugadores = Integer.parseInt(JOptionPane.showInputDialog(this,
+                    "Número de jugadores:"));
+            EquiposAgregarDialogo dialogoEquipo = new EquiposAgregarDialogo(this,
+                    nombreEquipo, cantidadJugadores);
             equipos.add(dialogoEquipo.getEquipo());
             modeloEquipos.addRow(new Object[]{nombreEquipo});
             lblNumeroEquipos.setText(String.valueOf(equipos.size()));
@@ -97,11 +101,14 @@ public class EventosAgregarDialogo extends JDialog {
         String categoria = (String) cmbCategoria.getSelectedItem();
 
         if (nombre.isEmpty() || equipos.size() < 2) {
-            JOptionPane.showMessageDialog(this, "El evento debe tener un nombre y al menos 2 equipos.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this,
+                    "El evento debe tener un nombre y al menos 2 equipos.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
-        Competicion nuevaCompeticion = new Competicion(nombre, tipoEvento, LocalDate.now(), equipos.size(), categoria);
+        Competicion nuevaCompeticion = new Competicion(nombre, tipoEvento, LocalDate.now(),
+                equipos.size(), categoria);
         for (Equipo equipo : equipos) {
             nuevaCompeticion.agregarEquipo(equipo);
         }
